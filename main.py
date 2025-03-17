@@ -91,7 +91,7 @@ def validate():
             output = model(x)
             
             loss += loss_function(output,y).item()
-            accuracy += get_batch_accuracy(output,y, train_N)
+            accuracy += get_batch_accuracy(output,y, valid_N)
     print('Valid - Loss: {:.4f} Accuracy: {:.4f}'.format(loss, accuracy))
 
 
