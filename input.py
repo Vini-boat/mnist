@@ -1,12 +1,10 @@
 from PIL import Image, ImageDraw, ImageTk
 import tkinter as tk
 
-# Configurações
-IMG_SIZE = 28  # Tamanho real da imagem
-DISPLAY_SIZE = 500  # Tamanho para exibição
-SCALE = DISPLAY_SIZE // IMG_SIZE  # Fator de escala
+IMG_SIZE = 28
+DISPLAY_SIZE = 500
+SCALE = DISPLAY_SIZE // IMG_SIZE
 
-# Criar imagem 28x28 para desenhar
 image = Image.new("L", (IMG_SIZE, IMG_SIZE), "black")  # Escala de cinza (L)
 draw = ImageDraw.Draw(image)
 
