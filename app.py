@@ -4,13 +4,13 @@ import tkinter as tk
 class App():
     def __init__(self):
         self.IMG_SIZE = 28
-        self.DISPLAY_SIZE = 500
+        self.DISPLAY_SIZE = 504
         self.SCALE = self.DISPLAY_SIZE // self.IMG_SIZE
 
         self.root = tk.Tk()
         self.root.title("MNIST")
 
-        self.image = Image.new("L", (self.IMG_SIZE, self.IMG_SIZE), "black")  # Escala de cinza (L)
+        self.image = Image.new("L", (self.IMG_SIZE, self.IMG_SIZE), "black")
         self.draw = ImageDraw.Draw(self.image)
         
         self.canvas = tk.Canvas(self.root, width=self.DISPLAY_SIZE, height=self.DISPLAY_SIZE, bg="black")
@@ -20,16 +20,25 @@ class App():
         self.image_on_canvas = self.canvas.create_image(0, 0, anchor="nw", image=tk_image)
 
         btn_save = tk.Button(self.root, text="Salvar", command=self.save_image)
-        btn_save.pack()
+        btn_save.pack(side=tk.RIGHT, padx=20, pady=10)
 
-        #btn_clear = tk.Button(self.root, text="Limpar", command=self.init_canvas)
-        #btn_clear.pack()
+        btn_clear = tk.Button(self.root, text="Limpar", command=self.clear_canvas)
+        btn_clear.pack(side=tk.LEFT, padx=20,pady=10)
 
         self.canvas.bind("<Button-1>", self.start_draw)
         self.canvas.bind("<B1-Motion>", self.draw_line)
         self.canvas.bind("<ButtonRelease-1>", self.reset_position)
 
         self.last_img_coord = (None,None)
+
+
+    def init_canvas(self):
+        pass
+
+    def clear_canvas(self):
+        self.image = Image.new("L", (self.IMG_SIZE, self.IMG_SIZE), "black")
+        self.draw = ImageDraw.Draw(self.image)
+        self.update_canvas()
 
     def get_scaled_coord(self,x,y):
         return (x // self.SCALE,y // self.SCALE)
@@ -39,6 +48,7 @@ class App():
 
 
     def draw_line(self, event):
+        print(event.x,event.y,self.get_scaled_coord(event.x,event.y))
         x, y = self.get_scaled_coord(event.x,event.y)
         if self.last_img_coord:
             self.draw.line((*self.last_img_coord, x, y), fill="white", width=1)
