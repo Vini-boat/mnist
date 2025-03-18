@@ -1,5 +1,8 @@
 from PIL import Image, ImageDraw, ImageTk
 import tkinter as tk
+from tkinter import messagebox
+import torch
+from torchvision import transforms
 
 class App():
     def __init__(self):
@@ -22,6 +25,9 @@ class App():
         btn_save = tk.Button(self.root, text="Salvar", command=self.save_image)
         btn_save.pack(side=tk.RIGHT, padx=20, pady=10)
 
+        btn_infer = tk.Button(self.root, text="Inferir", command=self.infer_image)
+        btn_infer.pack(side=tk.RIGHT, padx=20, pady=10)
+    
         btn_clear = tk.Button(self.root, text="Limpar", command=self.clear_canvas)
         btn_clear.pack(side=tk.LEFT, padx=20,pady=10)
 
@@ -31,9 +37,7 @@ class App():
 
         self.last_img_coord = (None,None)
 
-
-    def init_canvas(self):
-        pass
+        self.model = torch.load("model.pth",weights_only=False)
 
     def clear_canvas(self):
         self.image = Image.new("L", (self.IMG_SIZE, self.IMG_SIZE), "black")
@@ -64,9 +68,15 @@ class App():
     def reset_position(self, event):
         self.last_img_coord = (None,None)
 
+    def infer_image(self):
+        trans = transforms.Compose([transforms.ToTensor()])
+        img_tensor = trans(self.image)
+        prediction = self.model(img_tensor).argmax(dim=1,keepdim=True).item()
+        messagebox.showinfo("Eu acho que é", str(prediction))
+
     def save_image(self):
         self.image.save("mnist_digit.png")
-        print("Imagem salva como 'mnist_digit.png'")
+        print("Imagem salva como 'mnist_digit.png'") 
 
     def run(self):
         self.root.mainloop()
