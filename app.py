@@ -7,11 +7,11 @@ class App():
         self.DISPLAY_SIZE = 500
         self.SCALE = self.DISPLAY_SIZE // self.IMG_SIZE
 
-        self.image = Image.new("L", (self.IMG_SIZE, self.IMG_SIZE), "black")  # Escala de cinza (L)
-        
-        self.draw = ImageDraw.Draw(self.image)
         self.root = tk.Tk()
-        self.root.title("Desenho MNIST")
+        self.root.title("MNIST")
+
+        self.image = Image.new("L", (self.IMG_SIZE, self.IMG_SIZE), "black")  # Escala de cinza (L)
+        self.draw = ImageDraw.Draw(self.image)
         
         self.canvas = tk.Canvas(self.root, width=self.DISPLAY_SIZE, height=self.DISPLAY_SIZE, bg="black")
         self.canvas.pack()
@@ -22,21 +22,27 @@ class App():
         btn_save = tk.Button(self.root, text="Salvar", command=self.save_image)
         btn_save.pack()
 
+        #btn_clear = tk.Button(self.root, text="Limpar", command=self.init_canvas)
+        #btn_clear.pack()
+
         self.canvas.bind("<Button-1>", self.start_draw)
         self.canvas.bind("<B1-Motion>", self.draw_line)
         self.canvas.bind("<ButtonRelease-1>", self.reset_position)
 
-        self.last_x = None
-        self.lasy_y = None
+        self.last_img_coord = (None,None)
+
+    def get_scaled_coord(self,x,y):
+        return (x // self.SCALE,y // self.SCALE)
 
     def start_draw(self, event):
-        self.last_x, self.last_y = event.x // self.SCALE, event.y // self.SCALE
-    
+        self.last_img_coord = self.get_scaled_coord(event.x,event.y)
+
+
     def draw_line(self, event):
-        x, y = event.x // self.SCALE, event.y // self.SCALE
-        if self.last_x and self.last_y:
-            self.draw.line((self.last_x, self.last_y, x, y), fill="white", width=1)
-            self.last_x, self.last_y = x, y
+        x, y = self.get_scaled_coord(event.x,event.y)
+        if self.last_img_coord:
+            self.draw.line((*self.last_img_coord, x, y), fill="white", width=1)
+            self.last_img_coord = (x,y)
             self.update_canvas()
     
     def update_canvas(self):
@@ -46,7 +52,7 @@ class App():
         self.canvas.image = tk_image
 
     def reset_position(self, event):
-        self.last_x, self.last_y = None, None
+        self.last_img_coord = (None,None)
 
     def save_image(self):
         self.image.save("mnist_digit.png")
